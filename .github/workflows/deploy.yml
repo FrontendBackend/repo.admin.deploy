@@ -30,7 +30,7 @@ jobs:
         run: |
           SERVICE="${{ github.event.inputs.service }}"
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVER_HOST }} << EOF
-            cd ~/infra
+            cd ~/infra/repo.admin.deploy
 
             if [ "$SERVICE" = "backend" ]; then
               echo "📥 Actualizando SOLO Backend..."
