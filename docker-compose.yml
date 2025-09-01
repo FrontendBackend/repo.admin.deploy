@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  backend:
+    image: valerious/repo.admin.be:latest
+    container_name: backend_administrativo
+    restart: always
+    ports:
+      - "3000:3000"
+
+  frontend:
+    image: valerious/repo.admin.fe:latest
+    container_name: frontend_administrativo
+    restart: always
+    ports:
+      - "80:80"
