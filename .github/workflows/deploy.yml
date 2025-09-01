@@ -48,12 +48,11 @@ jobs:
 
             echo "✅ Deploy completado para: $SERVICE"
             docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"
-          EOF
-      - name: Limpiar imágenes no usadas
-        run: |
+
             echo "🧹 Limpiando imágenes antiguas..."
             docker image prune -af
             docker builder prune -af
+          EOF
 
 # name: Deploy Infra
 
