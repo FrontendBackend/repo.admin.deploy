@@ -20,7 +20,7 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            cd ~/infra   # carpeta donde tienes docker-compose.yml
+            cd ~/infra/repo.admin.deploy   # carpeta donde tienes docker-compose.yml
             git pull origin main
             docker compose pull
             docker compose up -d
