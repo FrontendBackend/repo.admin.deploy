@@ -1,26 +1,79 @@
-name: Deploy Infra
+name: 🚀 Deploy Infraestructura (Selectivo)
 
 on:
-  workflow_dispatch:   # lo ejecutas manualmente
-  push:
-    branches: ["main"]
+  workflow_dispatch:
+    inputs:
+      service:
+        description: "¿Qué quieres desplegar?"
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - backend
+          - frontend
+          - all
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout infra repo
-        uses: actions/checkout@v4
+      - name: 🛠️ Checkout repo infra
+        uses: actions/checkout@v3
 
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.2.0
+      - name: 🔑 Configurar SSH
+        uses: webfactory/ssh-agent@v0.7.0
         with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          script: |
-            cd ~/infra/repo.admin.deploy   # carpeta donde tienes docker-compose.yml
-            git pull origin main
-            docker compose pull
-            docker compose up -d
+          ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
+
+      - name: 🚀 Deploy servicio seleccionado
+        run: |
+          SERVICE="${{ github.event.inputs.service }}"
+          ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVER_HOST }} << EOF
+            cd ~/infra
+
+            if [ "$SERVICE" = "backend" ]; then
+              echo "📥 Actualizando SOLO Backend..."
+              docker-compose pull backend
+              docker-compose up -d backend
+            elif [ "$SERVICE" = "frontend" ]; then
+              echo "📥 Actualizando SOLO Frontend..."
+              docker-compose pull frontend
+              docker-compose up -d frontend
+            else
+              echo "📥 Actualizando Backend + Frontend..."
+              docker-compose pull
+              docker-compose up -d
+            fi
+
+            echo "✅ Deploy completado para: $SERVICE"
+            docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Status}}"
+          EOF
+
+
+# name: Deploy Infra
+
+# on:
+#   workflow_dispatch:   # lo ejecutas manualmente
+#   push:
+#     branches: ["main"]
+
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout infra repo
+#         uses: actions/checkout@v4
+
+#       - name: Deploy via SSH
+#         uses: appleboy/ssh-action@v1.2.0
+#         with:
+#           host: ${{ secrets.SERVER_HOST }}
+#           username: ${{ secrets.SERVER_USER }}
+#           key: ${{ secrets.SERVER_SSH_KEY }}
+#           script: |
+#             cd ~/infra/repo.admin.deploy   # carpeta donde tienes docker-compose.yml
+#             git pull origin main           # baja la última versión del docker-compose
+#             docker compose pull            # baja las últimas imágenes de DockerHub
+#             docker compose up -d --remove-orphans
