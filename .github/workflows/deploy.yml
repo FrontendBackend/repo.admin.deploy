@@ -35,15 +35,15 @@ jobs:
             if [ "$SERVICE" = "backend" ]; then
               echo "📥 Actualizando SOLO Backend..."
               docker compose pull backend
-              docker compose up -d backend
+              docker compose up -d backend --remove-orphans
             elif [ "$SERVICE" = "frontend" ]; then
               echo "📥 Actualizando SOLO Frontend..."
               docker compose pull frontend
-              docker compose up -d frontend
+              docker compose up -d frontend --remove-orphans
             else
               echo "📥 Actualizando Backend + Frontend..."
               docker compose pull
-              docker compose up -d
+              docker compose up -d --remove-orphans
             fi
 
             echo "✅ Deploy completado para: $SERVICE"
