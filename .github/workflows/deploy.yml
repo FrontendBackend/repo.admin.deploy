@@ -1,4 +1,4 @@
-name: 🚀 Deploy Infraestructura (Selectivo)
+name: 🚀 Deploy Infraestructura (Seleccionar servicio para despliegue)
 
 on:
   workflow_dispatch:
